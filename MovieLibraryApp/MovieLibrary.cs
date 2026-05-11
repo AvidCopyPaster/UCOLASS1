@@ -190,7 +190,12 @@ public class MovieLibrary
 
         if (movie == null)
         {
-            return "Movie not found.";
+            return "Movie not found. Enter a valid Movie ID or movie title.";
+        }
+
+        if (string.IsNullOrWhiteSpace(borrowerName))
+        {
+            return "Borrower name is required.";
         }
 
         if (movie.Availability == "Available")
@@ -205,9 +210,9 @@ public class MovieLibrary
 
         waitingLists[movie.MovieID].Enqueue(borrowerName);
 
-        movie.BorrowerHistory.Add($"{borrowerName} joined the waiting queue");
+        movie.BorrowerHistory.Add($"{borrowerName} joined the waiting queue for {movie.Title}");
 
-        return $"{borrowerName} added to queue.";
+        return $"{movie.Title} is already borrowed. {borrowerName} has been added to the waiting queue.";
     }
 
     public string ReturnMovie(string movieInput)
@@ -216,30 +221,36 @@ public class MovieLibrary
 
         if (movie == null)
         {
-            return "Movie not found.";
+            return "Movie not found. Enter a valid Movie ID or movie title.";
         }
 
-        if (!string.IsNullOrWhiteSpace(movie.CurrentBorrower))
+        string previousBorrower = movie.CurrentBorrower;
+
+        if (!string.IsNullOrWhiteSpace(previousBorrower))
         {
-            movie.BorrowerHistory.Add($"{movie.CurrentBorrower} returned {movie.Title}");
+            movie.BorrowerHistory.Add($"{previousBorrower} returned {movie.Title}");
         }
 
         if (waitingLists[movie.MovieID].Count > 0)
         {
             string nextBorrower = waitingLists[movie.MovieID].Dequeue();
 
-            movie.CurrentBorrower = nextBorrower;
             movie.Availability = "Borrowed";
+            movie.CurrentBorrower = nextBorrower;
 
-            movie.BorrowerHistory.Add($"{nextBorrower} automatically borrowed {movie.Title}");
+            string message = $"{movie.Title} has been automatically assigned to {nextBorrower}.";
 
-            return $"{nextBorrower} automatically borrowed {movie.Title}.";
+            movie.BorrowerHistory.Add($"{nextBorrower} automatically borrowed {movie.Title} from the waiting queue");
+
+            notifications.Enqueue(message);
+
+            return message;
         }
 
-        movie.CurrentBorrower = "";
         movie.Availability = "Available";
+        movie.CurrentBorrower = "";
 
-        return $"{movie.Title} returned successfully.";
+        return $"{movie.Title} has been returned and is now available.";
     }
 
     public List<object> GetQueueDetails()
@@ -248,21 +259,16 @@ public class MovieLibrary
 
         foreach (Movie movie in movies)
         {
-            string queueText = "None";
+            string queueText = "";
 
             if (waitingLists.ContainsKey(movie.MovieID))
             {
                 queueText = string.Join(", ", waitingLists[movie.MovieID]);
-
-                if (string.IsNullOrWhiteSpace(queueText))
-                {
-                    queueText = "None";
-                }
             }
 
             string historyText = "None";
 
-            if (movie.BorrowerHistory.Count > 0)
+            if (movie.BorrowerHistory != null && movie.BorrowerHistory.Count > 0)
             {
                 historyText = string.Join(" | ", movie.BorrowerHistory);
             }
@@ -271,13 +277,50 @@ public class MovieLibrary
             {
                 movie.MovieID,
                 movie.Title,
-                movie.CurrentBorrower,
-                WaitingQueue = queueText,
+                CurrentBorrower = string.IsNullOrWhiteSpace(movie.CurrentBorrower) ? "None" : movie.CurrentBorrower,
+                WaitingQueue = string.IsNullOrWhiteSpace(queueText) ? "None" : queueText,
                 BorrowerHistory = historyText
             });
         }
 
         return queueDetails;
+    }
+
+    public void ExportToJson(string filePath)
+    {
+        List<Movie> list = movies.ToList();
+
+        string json = JsonSerializer.Serialize(
+            list,
+            new JsonSerializerOptions { WriteIndented = true }
+        );
+
+        File.WriteAllText(filePath, json);
+    }
+
+    public void ImportFromJson(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            return;
+        }
+
+        string json = File.ReadAllText(filePath);
+        List<Movie>? importedMovies = JsonSerializer.Deserialize<List<Movie>>(json);
+
+        if (importedMovies == null)
+        {
+            return;
+        }
+
+        movies.Clear();
+        movieTable.Clear();
+        waitingLists.Clear();
+
+        foreach (Movie movie in importedMovies)
+        {
+            AddMovie(movie);
+        }
     }
 
     private void RebuildCollection(List<Movie> list)

@@ -6,40 +6,163 @@
         Width="1100">
 
     <Grid Margin="10">
+
         <TabControl>
 
+            <!-- ADD MOVIE TAB -->
             <TabItem Header="Add Movie">
+
                 <Grid Margin="20">
 
                     <StackPanel Width="350">
 
                         <TextBlock Text="Movie ID"/>
                         <TextBox x:Name="MovieIDTextBox"
-                                 Text="Example: M009"/>
+                                 Height="30"
+                                 Margin="0,5,0,15"
+                                 Text="Example: M004"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
 
                         <TextBlock Text="Title"/>
                         <TextBox x:Name="TitleTextBox"
-                                 Text="Example: New Movie"/>
+                                 Height="30"
+                                 Margin="0,5,0,15"
+                                 Text="Example: Interstellar"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
 
                         <TextBlock Text="Director"/>
                         <TextBox x:Name="DirectorTextBox"
-                                 Text="Example: Director"/>
+                                 Height="30"
+                                 Margin="0,5,0,15"
+                                 Text="Example: Christopher Nolan"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
 
                         <TextBlock Text="Genre"/>
                         <TextBox x:Name="GenreTextBox"
-                                 Text="Example: Sci-Fi"/>
+                                 Height="30"
+                                 Margin="0,5,0,15"
+                                 Text="Example: Sci-Fi"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
 
                         <TextBlock Text="Release Year"/>
                         <TextBox x:Name="YearTextBox"
-                                 Text="Example: 2026"/>
+                                 Height="30"
+                                 Margin="0,5,0,15"
+                                 Text="Example: 2014"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
 
                         <Button Content="Add Movie"
+                                Width="140"
+                                Height="35"
                                 Click="AddMovie_Click"/>
                     </StackPanel>
+
                 </Grid>
+
             </TabItem>
 
+            <!-- MOVIE LIBRARY TAB -->
             <TabItem Header="Movie Library">
+
+                <Grid Margin="10">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <WrapPanel Grid.Row="0" Margin="0,0,0,10">
+
+                        <TextBox x:Name="SearchTextBox"
+                                 Width="180"
+                                 Margin="5"
+                                 Text="Example: M001 or Inception"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
+
+                        <Button Content="Search Title"
+                                Margin="5"
+                                Click="SearchTitle_Click"/>
+
+                        <Button Content="Search ID"
+                                Margin="5"
+                                Click="SearchID_Click"/>
+
+                        <Button Content="Show All"
+                                Margin="5"
+                                Click="ShowAll_Click"/>
+
+                        <Button Content="Sort by Title"
+                                Margin="5"
+                                Click="SortTitle_Click"/>
+
+                        <Button Content="Sort by Year"
+                                Margin="5"
+                                Click="SortYear_Click"/>
+
+                        <TextBox x:Name="BorrowMovieTextBox"
+                                 Width="180"
+                                 Margin="5"
+                                 Text="Movie ID or Title"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
+
+                        <TextBox x:Name="BorrowerTextBox"
+                                 Width="140"
+                                 Margin="5"
+                                 Text="Example: John"
+                                 Foreground="Gray"
+                                 GotFocus="ClearExampleText"
+                                 LostFocus="RestoreExampleText"/>
+
+                        <Button Content="Borrow"
+                                Margin="5"
+                                Click="Borrow_Click"/>
+
+                        <Button Content="Return"
+                                Margin="5"
+                                Click="Return_Click"/>
+
+                        <Button Content="Export JSON"
+                                Margin="5"
+                                Click="Export_Click"/>
+
+                        <Button Content="Import JSON"
+                                Margin="5"
+                                Click="Import_Click"/>
+
+                    </WrapPanel>
+
+                    <DataGrid x:Name="MoviesDataGrid"
+                              Grid.Row="1"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"/>
+
+                    <TextBlock x:Name="StatusTextBlock"
+                               Grid.Row="2"
+                               Margin="0,10,0,0"
+                               FontWeight="Bold"
+                               Text="Ready"/>
+
+                </Grid>
+
+            </TabItem>
+
+            <!-- QUEUE TAB -->
+            <TabItem Header="Queue">
 
                 <Grid Margin="10">
 
@@ -48,61 +171,23 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <WrapPanel>
-
-                        <TextBox x:Name="SearchTextBox"
-                                 Width="180"
-                                 Text="Example: M001 or Inception"/>
-
-                        <Button Content="Search Title"
-                                Click="SearchTitle_Click"/>
-
-                        <Button Content="Search ID"
-                                Click="SearchID_Click"/>
-
-                        <Button Content="Show All"
-                                Click="ShowAll_Click"/>
-
-                        <Button Content="Sort by Title"
-                                Click="SortTitle_Click"/>
-
-                        <Button Content="Sort by Year"
-                                Click="SortYear_Click"/>
-
-                        <TextBox x:Name="BorrowMovieTextBox"
-                                 Width="180"
-                                 Text="Movie ID or Title"/>
-
-                        <TextBox x:Name="BorrowerTextBox"
-                                 Width="140"
-                                 Text="Example: John"/>
-
-                        <Button Content="Borrow"
-                                Click="Borrow_Click"/>
-
-                        <Button Content="Return"
-                                Click="Return_Click"/>
-                    </WrapPanel>
-
-                    <DataGrid x:Name="MoviesDataGrid"
-                              Grid.Row="1"
-                              AutoGenerateColumns="True"/>
-                </Grid>
-            </TabItem>
-
-            <TabItem Header="Queue">
-
-                <Grid Margin="10">
-
                     <Button Content="Refresh Queue"
+                            Width="130"
+                            Height="30"
+                            Margin="5"
                             Click="RefreshQueue_Click"/>
 
                     <DataGrid x:Name="QueueDataGrid"
-                              Margin="0,40,0,0"
-                              AutoGenerateColumns="True"/>
+                              Grid.Row="1"
+                              Margin="0,10,0,0"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"/>
+
                 </Grid>
+
             </TabItem>
 
         </TabControl>
+
     </Grid>
 </Window>
