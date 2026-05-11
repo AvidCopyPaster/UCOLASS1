@@ -57,6 +57,8 @@ TemporaryDependencyNodeTargetIdentifier=net10.0-windows
 App.xaml.cs
 AssemblyInfo.cs
 MainWindow.xaml.cs
+Movie.cs
+MovieLibrary.cs
 obj/Debug/net10.0-windows/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  App.g.cs
